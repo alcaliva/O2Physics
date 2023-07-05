@@ -203,7 +203,7 @@ struct AntimatterAbsorptionHMPID {
                      {pAxis, {160, -20.0, +20.0, "n#sigma_{TPC} (#pi)"}});
     pion_neg_reg.add("histTofNsigmaData", "nsigmaTOF (#pi)", HistType::kTH2F,
                      {pAxis, {160, -20.0, +20.0, "n#sigma_{TOF} (#pi)"}});
-    
+
     // Kaon Neg
     kaon_neg_reg.add("histTpcNsigmaData", "nsigmaTPC (K)", HistType::kTH2F,
                      {pAxis, {160, -20.0, +20.0, "n#sigma_{TPC} (K)"}});
@@ -369,7 +369,7 @@ struct AntimatterAbsorptionHMPID {
         deuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaDe());
       }
-      
+
       if (track.sign() < 0) {
         pion_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaPi());
