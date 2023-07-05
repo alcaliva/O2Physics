@@ -365,7 +365,7 @@ struct AntimatterAbsorptionHMPID {
         proton_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaPr());
         deuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaDe());
       }
-      
+
       if (track.sign() < 0) {
         pion_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaPi());
