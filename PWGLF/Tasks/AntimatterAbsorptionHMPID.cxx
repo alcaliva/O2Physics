@@ -521,7 +521,7 @@ struct AntimatterAbsorptionHMPID {
 
         double p_hmpid = track.p();
 
-        pion_plus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        pion_plus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // Pi Minus
@@ -547,7 +547,7 @@ struct AntimatterAbsorptionHMPID {
 
         double p_hmpid = track.p();
 
-        pion_minus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        pion_minus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // Kaon Plus
@@ -573,7 +573,7 @@ struct AntimatterAbsorptionHMPID {
 
         double p_hmpid = track.p();
 
-        kaon_plus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        kaon_plus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // Kaon Minus
@@ -599,7 +599,7 @@ struct AntimatterAbsorptionHMPID {
 
         double p_hmpid = track.p();
 
-        kaon_minus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        kaon_minus_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // Proton
@@ -624,7 +624,7 @@ struct AntimatterAbsorptionHMPID {
         }
 
         double p_hmpid = track.p();
-        proton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        proton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // AntiProton
@@ -649,7 +649,7 @@ struct AntimatterAbsorptionHMPID {
         }
 
         double p_hmpid = track.p();
-        antiproton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        antiproton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // Deuteron
@@ -674,7 +674,7 @@ struct AntimatterAbsorptionHMPID {
         }
 
         double p_hmpid = track.p();
-        deuteron_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        deuteron_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
 
       // AntiDeuteron
@@ -700,7 +700,7 @@ struct AntimatterAbsorptionHMPID {
 
         double p_hmpid = track.p();
 
-        antideuteron_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
+        antideuteron_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_hmpid);
       }
     }
   }
