@@ -272,6 +272,11 @@ struct AntimatterAbsorptionHMPID {
     // Event Counter
     pos_reg.fill(HIST("histRecVtxZData"), event.posZ());
 
+    if (!event.sel8())
+      return;
+
+    pos_reg.fill(HIST("histRecVtxZData"), event.posZ());
+
     // Loop over Reconstructed Tracks
     for (auto track : tracks) {
 
@@ -354,21 +359,31 @@ struct AntimatterAbsorptionHMPID {
         continue;
       if (track.phi() > phiMax)
         continue;
-
+      
       if (track.sign() > 0) {
-        pion_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaPi());
-        kaon_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaKa());
-        proton_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaPr());
-        deuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaDe());
+        
+        pion_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                          track.tpcNSigmaPi());
+        kaon_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                          track.tpcNSigmaKa());
+        proton_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                        track.tpcNSigmaPr());
+        deuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                          track.tpcNSigmaDe());
       }
-
+      
       if (track.sign() < 0) {
-        pion_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaPi());
-        kaon_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaKa());
-        antiproton_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaPr());
-        antideuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(), track.tpcNSigmaDe());
+        
+        pion_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                          track.tpcNSigmaPi());
+        kaon_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                          track.tpcNSigmaKa());
+        antiproton_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                            track.tpcNSigmaPr());
+        antideuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(),
+                              track.tpcNSigmaDe());
       }
-
+      
       bool passedPionTPCsel = false;
       bool passedKaonTPCsel = false;
       bool passedProtTPCsel = false;
