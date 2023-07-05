@@ -515,10 +515,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
 
@@ -542,10 +541,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
 
@@ -569,10 +567,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
 
@@ -596,10 +593,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
 
@@ -623,10 +619,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
         proton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
@@ -649,10 +644,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
         antiproton_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
@@ -675,10 +669,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
         deuteron_MC_reg.fill(HIST("energy_loss_corr"), p_vtx, p_abs);
@@ -701,10 +694,9 @@ struct AntimatterAbsorptionHMPID {
         auto prop = o2::base::Propagator::Instance();
 
         float xtogo = 0;
-        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)))
-          {
-            continue;
-          }
+        if (!par_cov.getXatLabR(radius_hmpid, xtogo, prop->getNominalBz(), o2::track::DirType::DirOutward) || !prop->PropagateToXBxByBz(par_cov, xtogo, 0.95, 10, o2::base::Propagator::MatCorrType::USEMatCorrLUT)) {
+          continue;
+        }
 
         double p_hmpid = track.p();
 
