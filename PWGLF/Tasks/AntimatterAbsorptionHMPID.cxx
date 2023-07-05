@@ -359,9 +359,9 @@ struct AntimatterAbsorptionHMPID {
         continue;
       if (track.phi() > phiMax)
         continue;
-      
+
       if (track.sign() > 0) {
-        
+
         pion_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaPi());
         kaon_pos_reg.fill(HIST("histTpcNsigmaData"), track.p(),
@@ -371,9 +371,9 @@ struct AntimatterAbsorptionHMPID {
         deuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaDe());
       }
-      
+
       if (track.sign() < 0) {
-        
+
         pion_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                           track.tpcNSigmaPi());
         kaon_neg_reg.fill(HIST("histTpcNsigmaData"), track.p(),
@@ -383,7 +383,7 @@ struct AntimatterAbsorptionHMPID {
         antideuteron_reg.fill(HIST("histTpcNsigmaData"), track.p(),
                               track.tpcNSigmaDe());
       }
-      
+
       bool passedPionTPCsel = false;
       bool passedKaonTPCsel = false;
       bool passedProtTPCsel = false;
