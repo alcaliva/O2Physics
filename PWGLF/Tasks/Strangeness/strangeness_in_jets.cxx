@@ -468,11 +468,6 @@ struct strangeness_in_jets {
 
     for (auto track : tracks) {
 
-      if (!track.passedITSRefit())
-        continue;
-      if (!track.passedTPCRefit())
-        continue;
-
       int i = track.globalIndex();
       if (!passedTrackSelectionForJets(track))
         continue;
@@ -587,10 +582,6 @@ struct strangeness_in_jets {
 
       const auto& pos = v0.posTrack_as<FullTracks>();
       const auto& neg = v0.negTrack_as<FullTracks>();
-      if (!pos.passedTPCRefit())
-        continue;
-      if (!neg.passedTPCRefit())
-        continue;
 
       TVector3 v0dir(pos.px() + neg.px(), pos.py() + neg.py(), pos.pz() + neg.pz());
 
@@ -665,10 +656,6 @@ struct strangeness_in_jets {
 
         const auto& pos = v0.posTrack_as<MCTracks>();
         const auto& neg = v0.negTrack_as<MCTracks>();
-        if (!pos.passedTPCRefit())
-          continue;
-        if (!neg.passedTPCRefit())
-          continue;
         if (!pos.has_mcParticle())
           continue;
         if (!neg.has_mcParticle())
@@ -718,14 +705,17 @@ struct strangeness_in_jets {
         // K0s
         if (mcParticle.pdgCode() == 310) {
           registryMC.fill(HIST("K0s_Generated"), multiplicity, mcParticle.pt());
+          registryMC.fill(HIST("K0s_eta_pt_pythia"), particle.pt(), particle.eta());
         }
         // Lambda
         if (mcParticle.pdgCode() == 3122) {
           registryMC.fill(HIST("Lambda_Generated"), multiplicity, mcParticle.pt());
+          registryMC.fill(HIST("Lambda_eta_pt_pythia"), particle.pt(), particle.eta());
         }
         // AntiLambda
         if (mcParticle.pdgCode() == -3122) {
           registryMC.fill(HIST("AntiLambda_Generated"), multiplicity, mcParticle.pt());
+          registryMC.fill(HIST("AntiLambda_eta_pt_pythia"), particle.pt(), particle.eta());
         }
       }
     }
@@ -752,18 +742,6 @@ struct strangeness_in_jets {
 
         // Global Index
         int i = particle.globalIndex();
-
-        if (particle.pdgCode() == 310) {
-          registryMC.fill(HIST("K0s_eta_pt_pythia"), particle.pt(), particle.eta());
-        }
-
-        if (particle.pdgCode() == 3122) {
-          registryMC.fill(HIST("Lambda_eta_pt_pythia"), particle.pt(), particle.eta());
-        }
-
-        if (particle.pdgCode() == -3122) {
-          registryMC.fill(HIST("AntiLambda_eta_pt_pythia"), particle.pt(), particle.eta());
-        }
 
         // Select Primary Particles
         float deltaX = particle.vx() - collision.posX();
@@ -895,6 +873,11 @@ struct strangeness_in_jets {
 
         // PDG Selection
         int pdg = particle.pdgCode();
+
+        if (!particle.isPhysicalPrimary())
+          continue;
+        if (particle.y()<yMin || particle.y()>yMax)
+          continue;
 
         TVector3 p_particle(particle.px(), particle.py(), particle.pz());
         float deltaEta_jet = p_particle.Eta() - jet_axis.Eta();
