@@ -876,7 +876,7 @@ struct strangeness_in_jets {
 
         if (!particle.isPhysicalPrimary())
           continue;
-        if (particle.y()<yMin || particle.y()>yMax)
+        if (particle.y() < yMin || particle.y() > yMax)
           continue;
 
         TVector3 p_particle(particle.px(), particle.py(), particle.pz());
