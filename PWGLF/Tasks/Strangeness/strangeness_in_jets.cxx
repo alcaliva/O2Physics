@@ -241,7 +241,7 @@ struct strangeness_in_jets {
       return false;
     if (TMath::Abs(track.dcaZ()) > dcazMax)
       return false;
-      
+
     // Rapidity Selection
     TLorentzVector lorentzVect;
     lorentzVect.SetXYZM(track.px(), track.py(), track.pz(), 0.13957021);
