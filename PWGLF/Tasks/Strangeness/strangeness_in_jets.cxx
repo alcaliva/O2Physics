@@ -86,6 +86,7 @@ struct strangeness_in_jets {
   Configurable<float> minTPCnClsFound{"minTPCnClsFound", 80.0f, "min number of found TPC clusters"};
   Configurable<float> minNCrossedRowsTPC{"minNCrossedRowsTPC", 80.0f, "min number of TPC crossed rows"};
   Configurable<float> maxChi2TPC{"maxChi2TPC", 4.0f, "max chi2 per cluster TPC"};
+  Configurable<float> maxChi2ITS{"maxChi2ITS", 36.0f, "max chi2 per cluster ITS"};
   Configurable<float> etaMin{"etaMin", -0.8f, "eta min"};
   Configurable<float> etaMax{"etaMax", +0.8f, "eta max"};
   Configurable<float> ptMin_V0_proton{"ptMin_V0_proton", 0.3f, "pt min of proton from V0"};
@@ -102,6 +103,8 @@ struct strangeness_in_jets {
   Configurable<float> dcapostoPVmin{"dcapostoPVmin", 0.1f, "Minimum DCA Pos To PV"};
   Configurable<bool> requireTOF{"requireTOF", false, "require TOF hit"};
   Configurable<bool> requireITS{"requireITS", false, "require ITS hit"};
+  Configurable<float> dcaxyMax{"dcaxyMax", 0.1f, "Maximum DCAxy to primary vertex"};
+  Configurable<float> dcazMax{"dcazMax", 0.1f, "Maximum DCAz to primary vertex"};
 
   // V0 Parameters
   Configurable<float> yMin{"yMin", -0.5f, "minimum y"};
@@ -118,6 +121,8 @@ struct strangeness_in_jets {
   Configurable<float> dcabachtopvMin{"dcabachtopvMin", 0.1f, "Minimum DCA bachelor to PV"};
   Configurable<float> dcaV0topvMin{"dcaV0topvMin", 0.1f, "Minimum DCA V0 to PV"};
   Configurable<float> dcaCascDaughtersMax{"dcaCascDaughtersMax", 0.5f, "Maximum DCA Daughters"};
+
+  // Debug
   Configurable<std::vector<int>> debug{"debug", {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, "debug"};
 
   void init(InitContext const&)
@@ -129,6 +134,16 @@ struct strangeness_in_jets {
     // Multiplicity Binning
     std::vector<double> multBinning = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     AxisSpec multAxis = {multBinning, "FT0C percentile"};
+
+    // Histograms (Pions)
+    registryData.add("piplus_tpc_in_jet", "piplus_tpc_in_jet", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TPC}"}});
+    registryData.add("piplus_tof_in_jet", "piplus_tof_in_jet", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TOF}"}});
+    registryData.add("piplus_tpc_in_ue", "piplus_tpc_in_ue", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TPC}"}});
+    registryData.add("piplus_tof_in_ue", "piplus_tof_in_ue", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TOF}"}});
+    registryData.add("piminus_tpc_in_jet", "piminus_tpc_in_jet", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TPC}"}});
+    registryData.add("piminus_tof_in_jet", "piminus_tof_in_jet", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TOF}"}});
+    registryData.add("piminus_tpc_in_ue", "piminus_tpc_in_ue", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TPC}"}});
+    registryData.add("piminus_tof_in_ue", "piminus_tof_in_ue", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, -10, 10, "n#sigma_{TOF}"}});
 
     // Histograms (Lambda)
     registryData.add("Lambda_in_jet", "Lambda_in_jet", HistType::kTH3F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, 1.09, 1.14, "m_{p#pi} (GeV/#it{c}^{2})"}});
@@ -203,6 +218,39 @@ struct strangeness_in_jets {
     return true;
   }
 
+  template <typename pionTrack>
+  bool passedTrackSelectionForPions(const pionTrack& track)
+  {
+    if (!track.hasITS())
+      return false;
+    if (track.itsNCls() < minITSnCls)
+      return false;
+    if (!track.hasTPC())
+      return false;
+    if (track.tpcNClsFound() < minTPCnClsFound)
+      return false;
+    if (track.tpcNClsCrossedRows() < minNCrossedRowsTPC)
+      return false;
+    if (track.tpcChi2NCl() > maxChi2TPC)
+      return false;
+    if (track.itsChi2NCl() > maxChi2ITS)
+      return false;
+    if (track.eta() < etaMin || track.eta() > etaMax)
+      return false;
+    if (TMath::Abs(track.dcaXY()) > dcaxyMax)
+      return false;
+    if (TMath::Abs(track.dcaZ()) > dcazMax)
+      return false;
+      
+    // Rapidity Selection
+    TLorentzVector lorentzVect;
+    lorentzVect.SetXYZM(track.px(), track.py(), track.pz(), 0.13957021);
+    if (lorentzVect.Rapidity() < yMin || lorentzVect.Rapidity() > yMax)
+      return false;
+
+    return true;
+  }
+
   // Lambda Selections
   template <typename V, typename T1, typename T2>
   bool passedLambdaSelection(const V& v0, const T1& ptrack, const T2& ntrack)
@@ -254,7 +302,7 @@ struct strangeness_in_jets {
 
     // Rapidity Selection
     TLorentzVector lorentzVect;
-    lorentzVect.SetXYZM(ptrack.px() + ntrack.px(), ptrack.py() + ntrack.py(), ptrack.pz() + ntrack.pz(), 1.115683);
+    lorentzVect.SetXYZM(v0.px(), v0.py(), v0.pz(), 1.115683);
     if (lorentzVect.Rapidity() < yMin || lorentzVect.Rapidity() > yMax)
       return false;
     return true;
@@ -311,7 +359,7 @@ struct strangeness_in_jets {
 
     // Rapidity Selection
     TLorentzVector lorentzVect;
-    lorentzVect.SetXYZM(ptrack.px() + ntrack.px(), ptrack.py() + ntrack.py(), ptrack.pz() + ntrack.pz(), 1.115683);
+    lorentzVect.SetXYZM(v0.px(), v0.py(), v0.pz(), 1.115683);
     if (lorentzVect.Rapidity() < yMin || lorentzVect.Rapidity() > yMax)
       return false;
     return true;
@@ -368,7 +416,7 @@ struct strangeness_in_jets {
 
     // Rapidity Selection
     TLorentzVector lorentzVect;
-    lorentzVect.SetXYZM(ptrack.px() + ntrack.px(), ptrack.py() + ntrack.py(), ptrack.pz() + ntrack.pz(), 0.497614);
+    lorentzVect.SetXYZM(v0.px(), v0.py(), v0.pz(), 0.497614);
     if (lorentzVect.Rapidity() < yMin || lorentzVect.Rapidity() > yMax)
       return false;
     return true;
@@ -964,6 +1012,57 @@ struct strangeness_in_jets {
         if (deltaR_ue1 < Rmax || deltaR_ue2 < Rmax) {
           registryData.fill(HIST("OmegaNeg_in_ue"), multiplicity, casc.pt(), casc.mOmega());
         }
+      }
+    }
+
+    for (auto track : tracks) {
+
+      if (!passedTrackSelectionForPions(track))
+        continue;
+
+      TVector3 track_dir(track.px(), track.py(), track.pz());
+      float deltaEta_jet = track_dir.Eta() - jet_axis.Eta();
+      float deltaPhi_jet = GetDeltaPhi(track_dir.Phi(), jet_axis.Phi());
+      float deltaR_jet = sqrt(deltaEta_jet * deltaEta_jet + deltaPhi_jet * deltaPhi_jet);
+      float deltaEta_ue1 = track_dir.Eta() - ue_axis1.Eta();
+      float deltaPhi_ue1 = GetDeltaPhi(track_dir.Phi(), ue_axis1.Phi());
+      float deltaR_ue1 = sqrt(deltaEta_ue1 * deltaEta_ue1 + deltaPhi_ue1 * deltaPhi_ue1);
+      float deltaEta_ue2 = track_dir.Eta() - ue_axis2.Eta();
+      float deltaPhi_ue2 = GetDeltaPhi(track_dir.Phi(), ue_axis2.Phi());
+      float deltaR_ue2 = sqrt(deltaEta_ue2 * deltaEta_ue2 + deltaPhi_ue2 * deltaPhi_ue2);
+
+      // TPC
+      if (deltaR_jet < Rmax && track.sign() > 0) {
+        registryData.fill(HIST("piplus_tpc_in_jet"), multiplicity, track.pt(), track.tpcNSigmaPi());
+      }
+      if ((deltaR_ue1 < Rmax || deltaR_ue2) < Rmax && track.sign() > 0) {
+        registryData.fill(HIST("piplus_tpc_in_ue"), multiplicity, track.pt(), track.tpcNSigmaPi());
+      }
+      if (deltaR_jet < Rmax && track.sign() < 0) {
+        registryData.fill(HIST("piminus_tpc_in_jet"), multiplicity, track.pt(), track.tpcNSigmaPi());
+      }
+      if ((deltaR_ue1 < Rmax || deltaR_ue2) < Rmax && track.sign() < 0) {
+        registryData.fill(HIST("piminus_tpc_in_ue"), multiplicity, track.pt(), track.tpcNSigmaPi());
+      }
+
+      if (track.tpcNSigmaPi() < nsigmaTPCmin || track.tpcNSigmaPi() > nsigmaTPCmax)
+        continue;
+
+      if (!track.hasTOF())
+        continue;
+
+      // TOF
+      if (deltaR_jet < Rmax && track.sign() > 0) {
+        registryData.fill(HIST("piplus_tof_in_jet"), multiplicity, track.pt(), track.tofNSigmaPi());
+      }
+      if ((deltaR_ue1 < Rmax || deltaR_ue2) < Rmax && track.sign() > 0) {
+        registryData.fill(HIST("piplus_tof_in_ue"), multiplicity, track.pt(), track.tofNSigmaPi());
+      }
+      if (deltaR_jet < Rmax && track.sign() < 0) {
+        registryData.fill(HIST("piminus_tof_in_jet"), multiplicity, track.pt(), track.tofNSigmaPi());
+      }
+      if ((deltaR_ue1 < Rmax || deltaR_ue2) < Rmax && track.sign() < 0) {
+        registryData.fill(HIST("piminus_tof_in_ue"), multiplicity, track.pt(), track.tofNSigmaPi());
       }
     }
   }

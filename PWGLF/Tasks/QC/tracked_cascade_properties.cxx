@@ -27,6 +27,8 @@
 #include "Common/DataModel/EventSelection.h"
 #include "Common/DataModel/PIDResponse.h"
 #include "Common/DataModel/Multiplicity.h"
+#include "Common/Core/TrackSelection.h"
+#include "Common/DataModel/TrackSelectionTables.h"
 #include "Framework/ASoA.h"
 #include "Framework/ASoAHelpers.h"
 #include "Framework/AnalysisDataModel.h"
@@ -114,10 +116,15 @@ struct tracked_cascade_properties {
   {
     registryQC.add("number_of_events_data", "number of events in data", HistType::kTH1F, {{15, 0, 15, "Event Cuts"}});
 
-    registryData.add("xi_pos", "xi_pos", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
-    registryData.add("xi_neg", "xi_neg", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
-    registryData.add("omega_pos", "omega_pos", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
-    registryData.add("omega_neg", "omega_neg", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("xi_pos_clustersize", "xi_pos_clustersize", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("xi_neg_clustersize", "xi_neg_clustersize", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("omega_pos_clustersize", "omega_pos_clustersize", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("omega_neg_clustersize", "omega_neg_clustersize", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+
+    registryData.add("xi_pos_clustersize_tgl", "xi_pos_clustersize_tgl", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT tg(#lambda)"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("xi_neg_clustersize_tgl", "xi_neg_clustersize_tgl", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT tg(#lambda)"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("omega_pos_clustersize_tgl", "omega_pos_clustersize_tgl", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT tg(#lambda)"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
+    registryData.add("omega_neg_clustersize_tgl", "omega_neg_clustersize_tgl", HistType::kTH3F, {{100, 0.0, 20.0, "#LT ITS cluster size #GT tg(#lambda)"}, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {16, -0.8, 0.8, "#eta"}});
 
     registryData.add("xi_mass_pos", "xi_mass_pos", HistType::kTH2F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, 1.28, 1.36, "m_{p#pi#pi} (GeV/#it{c}^{2})"}});
     registryData.add("xi_mass_neg", "xi_mass_neg", HistType::kTH2F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {200, 1.28, 1.36, "m_{p#pi#pi} (GeV/#it{c}^{2})"}});
@@ -411,22 +418,26 @@ struct tracked_cascade_properties {
 
       if (trackedCascade.xiMass() > mMin_xi && trackedCascade.xiMass() < mMax_xi) {
         if (btrack.sign() > 0) {
-          registryData.fill(HIST("xi_pos"), averageClusterSize, track.pt(), track.eta());
+          registryData.fill(HIST("xi_pos_clustersize_tgl"), averageClusterSize * track.tgl(), track.pt(), track.eta());
+          registryData.fill(HIST("xi_pos_clustersize"), averageClusterSize, track.pt(), track.eta());
           registryData.fill(HIST("xi_mass_pos"), track.pt(), trackedCascade.xiMass());
         }
         if (btrack.sign() < 0) {
-          registryData.fill(HIST("xi_neg"), averageClusterSize, track.pt(), track.eta());
+          registryData.fill(HIST("xi_neg_clustersize_tgl"), averageClusterSize * track.tgl(), track.pt(), track.eta());
+          registryData.fill(HIST("xi_neg_clustersize"), averageClusterSize, track.pt(), track.eta());
           registryData.fill(HIST("xi_mass_neg"), track.pt(), trackedCascade.xiMass());
         }
       }
 
       if (trackedCascade.omegaMass() > mMin_omega && trackedCascade.omegaMass() < mMax_omega) {
         if (btrack.sign() > 0) {
-          registryData.fill(HIST("omega_pos"), averageClusterSize, track.pt(), track.eta());
+          registryData.fill(HIST("omega_pos_clustersize_tgl"), averageClusterSize * track.tgl(), track.pt(), track.eta());
+          registryData.fill(HIST("omega_pos_clustersize"), averageClusterSize, track.pt(), track.eta());
           registryData.fill(HIST("omega_mass_pos"), track.pt(), trackedCascade.omegaMass());
         }
         if (btrack.sign() < 0) {
-          registryData.fill(HIST("omega_neg"), averageClusterSize, track.pt(), track.eta());
+          registryData.fill(HIST("omega_neg_clustersize_tgl"), averageClusterSize * track.tgl(), track.pt(), track.eta());
+          registryData.fill(HIST("omega_neg_clustersize"), averageClusterSize, track.pt(), track.eta());
           registryData.fill(HIST("omega_mass_neg"), track.pt(), trackedCascade.omegaMass());
         }
       }
