@@ -114,13 +114,6 @@ struct tracked_cascade_properties {
     registryData.add("omega_mass_neg", "omega_mass_neg", HistType::kTH2F, {{100, 0.0, 10.0, "#it{p} (GeV/#it{c})"}, {200, 1.63, 1.71, "m_{p#piK} (GeV/#it{c}^{2})"}});
   }
 
-  // Hits on ITS Layer
-  bool hasHitOnITSlayer(uint8_t itsClsmap, int layer)
-  {
-    unsigned char test_bit = 1 << layer;
-    return (itsClsmap & test_bit);
-  }
-
   void processData(SelectedCollisions::iterator const& collision, aod::AssignedTrackedCascades const& trackedCascades,
                    aod::Cascades const&, FullTracks const& tracks)
   {
@@ -152,7 +145,7 @@ struct tracked_cascade_properties {
       int clusterSize[7];
       double averageClusterSize(0);
       for (int i = 0; i < 7; i++) {
-        clusterSize[i] = (track.itsClusterSizes() >> (i * 4)) & 0xf;
+        clusterSize[i] = track.itsClsSizeInLayer(i);
         averageClusterSize += static_cast<double>(clusterSize[i]);
       }
       averageClusterSize = averageClusterSize / static_cast<double>(track.itsNCls());
