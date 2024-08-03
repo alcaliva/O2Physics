@@ -1002,13 +1002,13 @@ struct nuclei_in_jets {
           registryMC.fill(HIST("antiproton_all_jet"), track.pt());
           if (particle.isPhysicalPrimary())
             registryMC.fill(HIST("antiproton_prim_jet"), track.pt());
-            registryMC.fill(HIST("antiproton_jet"), track.pt());
+          registryMC.fill(HIST("antiproton_jet"), track.pt());
         }
         if (deltaR_ue1 < Rmax || deltaR_ue2 < Rmax) {
           registryMC.fill(HIST("antiproton_all_ue"), track.pt());
           if (particle.isPhysicalPrimary())
             registryMC.fill(HIST("antiproton_prim_ue"), track.pt());
-            registryMC.fill(HIST("antiproton_ue"), track.pt());
+          registryMC.fill(HIST("antiproton_ue"), track.pt());
         }
       }
     }
