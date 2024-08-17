@@ -134,6 +134,7 @@ struct nuclei_in_jets {
 
     // DCA
     registryQC.add("dcaxy_vs_pt", "dcaxy_vs_pt", HistType::kTH2F, {{100, 0.0, 5.0, "#it{p}_{T} (GeV/#it{c})"}, {2000, -0.05, 0.05, "DCA_{xy} (cm)"}});
+    registryQC.add("dcaz_vs_pt", "dcaz_vs_pt", HistType::kTH2F, {{100, 0.0, 5.0, "#it{p}_{T} (GeV/#it{c})"}, {2000, -0.05, 0.05, "DCA_{z} (cm)"}});
 
     // Event Counters
     registryData.add("number_of_events_data", "number of events in data", HistType::kTH1F, {{10, 0, 10, "counter"}});
@@ -223,7 +224,7 @@ struct nuclei_in_jets {
     if (track.pt() < 0.1)
       return false;
 
-    // pt-dependent selection
+    //pt-dependent selection
     if (setDCAselectionPtDep) {
       if (TMath::Abs(track.dcaXY()) > (0.004f + 0.013f / track.pt()))
         return false;
@@ -231,7 +232,7 @@ struct nuclei_in_jets {
         return false;
     }
 
-    // standard selection
+    //standard selection
     if (!setDCAselectionPtDep) {
       if (TMath::Abs(track.dcaXY()) > 0.1)
         return false;
@@ -408,6 +409,7 @@ struct nuclei_in_jets {
       if (!passedTrackSelectionForJetReconstruction(track))
         continue;
       registryQC.fill(HIST("dcaxy_vs_pt"), track.pt(), track.dcaXY());
+      registryQC.fill(HIST("dcaz_vs_pt"), track.pt(), track.dcaZ());
 
       if (track.pt() > pt_max) {
         leading_ID = i;
