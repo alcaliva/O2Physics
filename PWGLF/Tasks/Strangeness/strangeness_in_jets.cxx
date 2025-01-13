@@ -1909,9 +1909,9 @@ struct strangeness_in_jets {
   }
   PROCESS_SWITCH(strangeness_in_jets, processGen, "Process generated MC", false);
 
-  void processSecondaryV0s(SimCollisions const &collisions, MCTracks const &mcTracks, aod::V0Datas const &fullV0s, const aod::McParticles &) {
+  void processSecondaryV0s(SimCollisions const& collisions, MCTracks const& mcTracks, aod::V0Datas const& fullV0s, const aod::McParticles&) {
 
-    for (const auto &collision : collisions) {
+    for (const auto& collision : collisions) {
 
       // Event Selection
       if (!collision.sel8())
@@ -2044,10 +2044,10 @@ struct strangeness_in_jets {
         if (isSelected[i] == 0)
           continue;
 
-        for (auto &v0 : v0s_per_coll) { // o2-linter: disable=[const-ref-in-for-loop]
+        for (auto& v0 : v0s_per_coll) { // o2-linter: disable=[const-ref-in-for-loop]
 
-          const auto &pos = v0.posTrack_as<MCTracks>();
-          const auto &neg = v0.negTrack_as<MCTracks>();
+          const auto& pos = v0.posTrack_as<MCTracks>();
+          const auto& neg = v0.negTrack_as<MCTracks>();
           if (!pos.has_mcParticle())
             continue;
           if (!neg.has_mcParticle())
@@ -2062,8 +2062,8 @@ struct strangeness_in_jets {
 
           int pdg_parent(0);
           bool isPhysPrim = false;
-          for (auto &particleMotherOfNeg : negParticle.mothers_as<aod::McParticles>()) {
-            for (auto &particleMotherOfPos : posParticle.mothers_as<aod::McParticles>()) {
+          for (auto& particleMotherOfNeg : negParticle.mothers_as<aod::McParticles>()) {
+            for (auto& particleMotherOfPos : posParticle.mothers_as<aod::McParticles>()) {
               if (particleMotherOfNeg == particleMotherOfPos) {
                 pdg_parent = particleMotherOfNeg.pdgCode();
                 isPhysPrim = particleMotherOfNeg.isPhysicalPrimary();
