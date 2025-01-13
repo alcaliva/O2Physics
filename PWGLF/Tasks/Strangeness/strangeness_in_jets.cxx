@@ -239,9 +239,12 @@ struct strangeness_in_jets {
     registryMC.add("OmegaNeg_reconstructed", "OmegaNeg_reconstructed", HistType::kTH2F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
 
     // Histograms for secondary hadrons
-    registryMC.add("K0s_reconstructed_incl", "K0s_reconstructed_incl", HistType::kTH2F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
-    registryMC.add("Lambda_reconstructed_incl", "Lambda_reconstructed_incl", HistType::kTH2F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
-    registryMC.add("AntiLambda_reconstructed_incl", "AntiLambda_reconstructed_incl", HistType::kTH2F, {multBinning, {100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("allLambdaJet", "allLambdaJet", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("allLambdaUE", "allLambdaUE", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("primLambdaJet", "primLambdaJet", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("primLambdaUE", "primLambdaUE", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("primAntiLambdaJet", "primAntiLambdaJet", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
+    registryMC.add("primAntiLambdaUE", "primAntiLambdaUE", HistType::kTH1F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}});
 
     // Histograms for 2d reweighting (pion)
     registryMC.add("Pion_eta_pt_jet", "Pion_eta_pt_jet", HistType::kTH2F, {{100, 0.0, 10.0, "#it{p}_{T} (GeV/#it{c})"}, {18, -0.9, 0.9, "#eta"}});
@@ -1389,21 +1392,12 @@ struct strangeness_in_jets {
           for (auto& particleMotherOfPos : posParticle.mothers_as<aod::McParticles>()) { // o2-linter: disable=[const-ref-in-for-loop]
             if (particleMotherOfNeg == particleMotherOfPos) {
               pdg_parent = particleMotherOfNeg.pdgCode();
+              isPhysPrim = particleMotherOfNeg.isPhysicalPrimary();
             }
           }
         }
         if (pdg_parent == 0)
           continue;
-
-        if (passedK0ShortSelection(v0, pos, neg) && pdg_parent == 310) {
-          registryMC.fill(HIST("K0s_reconstructed_incl"), multiplicity, v0.pt());
-        }
-        if (passedLambdaSelection(v0, pos, neg) && pdg_parent == 3122) {
-          registryMC.fill(HIST("Lambda_reconstructed_incl"), multiplicity, v0.pt());
-        }
-        if (passedAntiLambdaSelection(v0, pos, neg) && pdg_parent == -3122) {
-          registryMC.fill(HIST("AntiLambda_reconstructed_incl"), multiplicity, v0.pt());
-        }
         if (!isPhysPrim)
           continue;
 
@@ -1914,6 +1908,217 @@ struct strangeness_in_jets {
     }
   }
   PROCESS_SWITCH(strangeness_in_jets, processGen, "Process generated MC", false);
+    
+  void processSecondaryV0s(SimCollisions const &collisions, MCTracks const &mcTracks, aod::V0Datas const &fullV0s, const aod::McParticles &) {
+    
+    for (const auto &collision : collisions) {
+
+      // Event Selection
+      if (!collision.sel8())
+        continue;
+
+      if (TMath::Abs(collision.posZ()) > zVtx)
+        continue;
+
+      auto tracks_per_coll = mcTracks.sliceBy(perCollision, collision.globalIndex());
+      auto v0s_per_coll = fullV0s.sliceBy(perCollisionV0, collision.globalIndex());
+
+      // List of Tracks
+      std::vector<TVector3> trk;
+
+      for (auto track : tracks_per_coll) {
+
+        if (!passedTrackSelectionForJetReconstruction(track))
+          continue;
+
+        TVector3 momentum(track.px(), track.py(), track.pz());
+        trk.push_back(momentum);
+      }
+
+      // Anti-kt Jet Finder
+      int n_particles_removed(0);
+      std::vector<TVector3> jet;
+      std::vector<TVector3> ue1;
+      std::vector<TVector3> ue2;
+
+      do {
+        double dij_min(1e+06), diB_min(1e+06);
+        int i_min(0), j_min(0), iB_min(0);
+        for (int i = 0; i < static_cast<int>(trk.size()); i++) {
+          if (trk[i].Mag() == 0)
+            continue;
+          double diB = 1.0 / (trk[i].Pt() * trk[i].Pt());
+          if (diB < diB_min) {
+            diB_min = diB;
+            iB_min = i;
+          }
+          for (int j = (i + 1); j < static_cast<int>(trk.size()); j++) {
+            if (trk[j].Mag() == 0)
+              continue;
+            double dij = calculate_dij(trk[i], trk[j], Rjet);
+            if (dij < dij_min) {
+              dij_min = dij;
+              i_min = i;
+              j_min = j;
+            }
+          }
+        }
+        if (dij_min < diB_min) {
+          trk[i_min] = trk[i_min] + trk[j_min];
+          trk[j_min].SetXYZ(0, 0, 0);
+          n_particles_removed++;
+        }
+        if (dij_min > diB_min) {
+          jet.push_back(trk[iB_min]);
+          trk[iB_min].SetXYZ(0, 0, 0);
+          n_particles_removed++;
+        }
+      } while (n_particles_removed < static_cast<int>(trk.size()));
+
+      // Jet Selection
+      std::vector<int> isSelected;
+      for (int i = 0; i < static_cast<int>(jet.size()); i++) {
+        isSelected.push_back(0);
+      }
+
+      int n_jets_selected(0);
+      for (int i = 0; i < static_cast<int>(jet.size()); i++) {
+
+        if ((TMath::Abs(jet[i].Eta()) + Rjet) > max_eta)
+          continue;
+
+        // Perpendicular cones
+        TVector3 ue_axis1(0, 0, 0);
+        TVector3 ue_axis2(0, 0, 0);
+        get_perpendicular_axis(jet[i], ue_axis1, +1);
+        get_perpendicular_axis(jet[i], ue_axis2, -1);
+        ue1.push_back(ue_axis1);
+        ue2.push_back(ue_axis2);
+
+        double nPartJetPlusUE(0);
+        double ptJetPlusUE(0);
+        double ptJet(0);
+        double ptUE(0);
+
+        for (auto track : tracks_per_coll) {
+
+          if (!passedTrackSelectionForJetReconstruction(track))
+            continue;
+          TVector3 sel_track(track.px(), track.py(), track.pz());
+
+          double deltaEta_jet = sel_track.Eta() - jet[i].Eta();
+          double deltaPhi_jet = GetDeltaPhi(sel_track.Phi(), jet[i].Phi());
+          double deltaR_jet = std::sqrt(deltaEta_jet * deltaEta_jet + deltaPhi_jet * deltaPhi_jet);
+          double deltaEta_ue1 = sel_track.Eta() - ue_axis1.Eta();
+          double deltaPhi_ue1 = GetDeltaPhi(sel_track.Phi(), ue_axis1.Phi());
+          double deltaR_ue1 = std::sqrt(deltaEta_ue1 * deltaEta_ue1 + deltaPhi_ue1 * deltaPhi_ue1);
+          double deltaEta_ue2 = sel_track.Eta() - ue_axis2.Eta();
+          double deltaPhi_ue2 = GetDeltaPhi(sel_track.Phi(), ue_axis2.Phi());
+          double deltaR_ue2 = std::sqrt(deltaEta_ue2 * deltaEta_ue2 + deltaPhi_ue2 * deltaPhi_ue2);
+
+          if (deltaR_jet < Rjet) {
+            nPartJetPlusUE++;
+            ptJetPlusUE = ptJetPlusUE + sel_track.Pt();
+          }
+          if (deltaR_ue1 < Rjet) {
+            ptUE = ptUE + sel_track.Pt();
+          }
+          if (deltaR_ue2 < Rjet) {
+            ptUE = ptUE + sel_track.Pt();
+          }
+        }
+        ptJet = ptJetPlusUE - 0.5 * ptUE;
+
+        if (ptJet < min_jet_pt)
+          continue;
+        if (nPartJetPlusUE < min_nPartInJet)
+          continue;
+        n_jets_selected++;
+        isSelected[i] = 1;
+      }
+      if (n_jets_selected == 0)
+        continue;
+
+      for (int i = 0; i < static_cast<int>(jet.size()); i++) {
+
+        if (isSelected[i] == 0)
+          continue;
+
+        for (auto &v0 : v0s_per_coll) { // o2-linter: disable=[const-ref-in-for-loop]
+
+          const auto &pos = v0.posTrack_as<MCTracks>();
+          const auto &neg = v0.negTrack_as<MCTracks>();
+          if (!pos.has_mcParticle())
+            continue;
+          if (!neg.has_mcParticle())
+            continue;
+
+          auto posParticle = pos.mcParticle_as<aod::McParticles>();
+          auto negParticle = neg.mcParticle_as<aod::McParticles>();
+          if (!posParticle.has_mothers())
+            continue;
+          if (!negParticle.has_mothers())
+            continue;
+
+          int pdg_parent(0);
+          bool isPhysPrim = false;
+          for (auto &particleMotherOfNeg : negParticle.mothers_as<aod::McParticles>()) {
+            for (auto &particleMotherOfPos : posParticle.mothers_as<aod::McParticles>()) {
+              if (particleMotherOfNeg == particleMotherOfPos) {
+                pdg_parent = particleMotherOfNeg.pdgCode();
+                isPhysPrim = particleMotherOfNeg.isPhysicalPrimary();
+              }
+            }
+          }
+          if (pdg_parent == 0)
+            continue;
+
+          TVector3 particle_dir(v0.px(), v0.py(), v0.pz());
+          float deltaEta_jet = particle_dir.Eta() - jet[i].Eta();
+          float deltaPhi_jet = GetDeltaPhi(particle_dir.Phi(), jet[i].Phi());
+          float deltaR_jet = std::sqrt(deltaEta_jet * deltaEta_jet + deltaPhi_jet * deltaPhi_jet);
+          float deltaEta_ue1 = particle_dir.Eta() - ue1[i].Eta();
+          float deltaPhi_ue1 = GetDeltaPhi(particle_dir.Phi(), ue1[i].Phi());
+          float deltaR_ue1 = std::sqrt(deltaEta_ue1 * deltaEta_ue1 + deltaPhi_ue1 * deltaPhi_ue1);
+          float deltaEta_ue2 = particle_dir.Eta() - ue2[i].Eta();
+          float deltaPhi_ue2 = GetDeltaPhi(particle_dir.Phi(), ue2[i].Phi());
+          float deltaR_ue2 = std::sqrt(deltaEta_ue2 * deltaEta_ue2 + deltaPhi_ue2 * deltaPhi_ue2);
+
+          // Lambda
+          if (passedLambdaSelection(v0, pos, neg) && pdg_parent == 3122) {
+            if (deltaR_jet < Rjet) {
+              registryMC.fill(HIST("allLambdaJet"), v0.pt());
+              if (isPhysPrim) {
+                registryMC.fill(HIST("primLambdaJet"), v0.pt());
+              }
+            }
+            if (deltaR_ue1 < Rjet || deltaR_ue2 < Rjet) {
+              registryMC.fill(HIST("allLambdaUE"), v0.pt());
+              if (particle.isPhysicalPrimary()) {
+                registryMC.fill(HIST("primLambdaUE"), v0.pt());
+              }
+            }
+          }
+          // Antilambda
+          if (passedAntiLambdaSelection(v0, pos, neg) && pdg_parent == -3122) {
+            if (deltaR_jet < Rjet) {
+              registryMC.fill(HIST("allAntiLambdaJet"), v0.pt());
+              if (isPhysPrim) {
+                registryMC.fill(HIST("primAntiLambdaJet"), v0.pt());
+              }
+            }
+            if (deltaR_ue1 < Rjet || deltaR_ue2 < Rjet) {
+              registryMC.fill(HIST("allAntiLambdaUE"), v0.pt());
+              if (particle.isPhysicalPrimary()) {
+                registryMC.fill(HIST("primAntiLambdaUE"), v0.pt());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  PROCESS_SWITCH(strangeness_in_jets, processSecondaryV0s, "process secondary V0s", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
