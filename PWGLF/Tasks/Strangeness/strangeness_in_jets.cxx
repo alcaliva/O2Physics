@@ -1908,9 +1908,9 @@ struct strangeness_in_jets {
     }
   }
   PROCESS_SWITCH(strangeness_in_jets, processGen, "Process generated MC", false);
-    
+
   void processSecondaryV0s(SimCollisions const &collisions, MCTracks const &mcTracks, aod::V0Datas const &fullV0s, const aod::McParticles &) {
-    
+
     for (const auto &collision : collisions) {
 
       // Event Selection
