@@ -164,7 +164,10 @@ struct NucleiInJets {
     registryQC.add("event_selection_jets", "event_selection_jets", HistType::kTH1F, {{10, 0, 10, "counter"}});
     registryQC.add("dcaxy_vs_pt", "dcaxy_vs_pt", HistType::kTH2F, {{100, 0.0, 5.0, "#it{p}_{T} (GeV/#it{c})"}, {2000, -0.05, 0.05, "DCA_{xy} (cm)"}});
     registryQC.add("dcaz_vs_pt", "dcaz_vs_pt", HistType::kTH2F, {{100, 0.0, 5.0, "#it{p}_{T} (GeV/#it{c})"}, {2000, -0.05, 0.05, "DCA_{z} (cm)"}});
-    registryQC.add("jet_ue_overlaps", "jet_ue_overlaps", HistType::kTH2F, {{20, 0.0, 20.0, "#it{n}_{jet}"}, {200, 0.0, 200.0, "#it{n}_{overlaps}"}});
+    registryQC.add("overlaps_jet_jet", "overlaps_jet_jet", HistType::kTH2F, {{20, 0.0, 20.0, "#it{n}_{jet}"}, {200, 0.0, 200.0, "#it{n}_{overlaps}"}});
+    registryQC.add("overlaps_jet_ue", "overlaps_jet_ue", HistType::kTH2F, {{20, 0.0, 20.0, "#it{n}_{jet}"}, {200, 0.0, 200.0, "#it{n}_{overlaps}"}});
+    registryQC.add("overlaps_ue_ue", "overlaps_ue_ue", HistType::kTH2F, {{20, 0.0, 20.0, "#it{n}_{jet}"}, {200, 0.0, 200.0, "#it{n}_{overlaps}"}});
+    registryQC.add("overlaps_tot", "overlaps_tot", HistType::kTH2F, {{20, 0.0, 20.0, "#it{n}_{jet}"}, {200, 0.0, 200.0, "#it{n}_{overlaps}"}});
 
     // Event Counters
     registryData.add("number_of_events_data", "number of events in data", HistType::kTH1F, {{10, 0, 10, "counter"}});
@@ -608,6 +611,9 @@ struct NucleiInJets {
 
     // Overlaps
     int nOverlaps(0);
+    int nOverlapsJetJet(0);
+    int nOverlapsJetUe(0);
+    int nOverlapsUeUe(0);
     for (int i = 0; i < static_cast<int>(jet.size()); i++) { // o2-linter: disable=[const-ref-in-for-loop]
       if (isSelected[i] == 0)
         continue;
@@ -615,11 +621,21 @@ struct NucleiInJets {
       for (int j = 0; j < static_cast<int>(jet.size()); j++) { // o2-linter: disable=[const-ref-in-for-loop]
         if (isSelected[j] == 0 || i == j)
           continue;
-        if (overlap(jet[i], ue1[j], rJet) || overlap(jet[i], ue2[j], rJet) || overlap(jet[i], jet[j], rJet))
-          nOverlaps++;
+        if (overlap(jet[i], jet[j], rJet))
+          nOverlapsJetJet++;
+        if (overlap(jet[i], ue1[j], rJet) || overlap(jet[i], ue2[j], rJet))
+          nOverlapsJetUe++;
+        if (overlap(ue1[i], ue1[j], rJet) || overlap(ue1[i], ue2[j], rJet))
+          nOverlapsUeUe++;
+        if (overlap(ue2[i], ue2[j], rJet))
+          nOverlapsUeUe++;
       }
     }
-    registryQC.fill(HIST("jet_ue_overlaps"), nJetsSelected, nOverlaps);
+    nOverlaps = nOverlapsJetJet + nOverlapsJetUe + nOverlapsUeUe;
+    registryQC.fill(HIST("overlaps_jet_jet"), nJetsSelected, nOverlapsJetJet);
+    registryQC.fill(HIST("overlaps_jet_ue"), nJetsSelected, nOverlapsJetUe);
+    registryQC.fill(HIST("overlaps_ue_ue"), nJetsSelected, nOverlapsUeUe);
+    registryQC.fill(HIST("overlaps_tot"), nJetsSelected, nOverlaps);
 
     if (nJetsSelected > nJetsPerEventMax)
       return;
