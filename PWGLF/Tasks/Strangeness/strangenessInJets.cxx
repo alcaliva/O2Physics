@@ -1478,8 +1478,8 @@ struct StrangenessInJets {
             switch (grandMother.pdgCode()) {
               case kXiMinus:
               case kXiPlusBar:
-              // case 3322:
-              // case -3322:
+                // case 3322:
+                // case -3322:
                 if (weightsXiInJet) {
                   int ibinXiInJet = weightsXiInJet->GetXaxis()->FindBin(grandMother.pt());
                   wSecLambdaInJet = weightsXiInJet->GetBinContent(ibinXiInJet);
@@ -1509,8 +1509,8 @@ struct StrangenessInJets {
             switch (grandMother.pdgCode()) {
               case kXiMinus:
               case kXiPlusBar:
-              // case 3322:
-              // case -3322:
+                // case 3322:
+                // case -3322:
                 if (weightsAntiXiInJet) {
                   int ibinAntiXiInJet = weightsAntiXiInJet->GetXaxis()->FindBin(grandMother.pt());
                   wSecAntiLambdaInJet = weightsAntiXiInJet->GetBinContent(ibinAntiXiInJet);
