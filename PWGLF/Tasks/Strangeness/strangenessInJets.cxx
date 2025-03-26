@@ -580,7 +580,7 @@ struct StrangenessInJets {
       return false;
     if (v0.v0radius() < minimumV0Radius || v0.v0radius() > maximumV0Radius)
       return false;
-    if (v0.dcaV0daughters() > dcaV0DaughtersMax)
+    if (std::fabs(v0.dcaV0daughters()) > dcaV0DaughtersMax)
       return false;
     if (std::fabs(v0.dcapostopv()) < dcapostoPVmin)
       return false;
@@ -631,7 +631,7 @@ struct StrangenessInJets {
       return false;
     if (v0.v0radius() < minimumV0Radius || v0.v0radius() > maximumV0Radius)
       return false;
-    if (v0.dcaV0daughters() > dcaV0DaughtersMax)
+    if (std::fabs(v0.dcaV0daughters()) > dcaV0DaughtersMax)
       return false;
     if (std::fabs(v0.dcapostopv()) < dcapostoPVmin)
       return false;
@@ -682,7 +682,7 @@ struct StrangenessInJets {
       return false;
     if (v0.v0radius() < minimumV0Radius || v0.v0radius() > maximumV0Radius)
       return false;
-    if (v0.dcaV0daughters() > dcaV0DaughtersMax)
+    if (std::fabs(v0.dcaV0daughters()) > dcaV0DaughtersMax)
       return false;
     if (std::fabs(v0.dcapostopv()) < dcapostoPVmin)
       return false;
@@ -773,11 +773,11 @@ struct StrangenessInJets {
       return false;
     if (casc.v0radius() < minimumV0Radius || casc.v0radius() > maximumV0Radius)
       return false;
-    if (casc.dcaV0daughters() > dcaV0DaughtersMax)
+    if (std::fabs(casc.dcaV0daughters()) > dcaV0DaughtersMax)
       return false;
-    if (casc.dcapostopv() < dcapostoPVmin)
+    if (std::fabs(casc.dcapostopv()) < dcapostoPVmin)
       return false;
-    if (casc.dcanegtopv() < dcanegtoPVmin)
+    if (std::fabs(casc.dcanegtopv()) < dcanegtoPVmin)
       return false;
 
     // Cascade Selections
@@ -785,11 +785,11 @@ struct StrangenessInJets {
       return false;
     if (casc.casccosPA(coll.posX(), coll.posY(), coll.posZ()) < casccospaMin)
       return false;
-    if (casc.dcabachtopv() < dcabachtopvMin)
+    if (std::fabs(casc.dcabachtopv()) < dcabachtopvMin)
       return false;
-    if (casc.dcav0topv(coll.posX(), coll.posY(), coll.posZ()) < dcaV0topvMin)
+    if (std::fabs(casc.dcav0topv(coll.posX(), coll.posY(), coll.posZ())) < dcaV0topvMin)
       return false;
-    if (casc.dcacascdaughters() > dcaCascDaughtersMax)
+    if (std::fabs(casc.dcacascdaughters()) > dcaCascDaughtersMax)
       return false;
 
     // PID Selection on bachelor
@@ -872,11 +872,11 @@ struct StrangenessInJets {
       return false;
     if (casc.v0radius() < minimumV0Radius || casc.v0radius() > maximumV0Radius)
       return false;
-    if (casc.dcaV0daughters() > dcaV0DaughtersMax)
+    if (std::fabs(casc.dcaV0daughters()) > dcaV0DaughtersMax)
       return false;
-    if (casc.dcapostopv() < dcapostoPVmin)
+    if (std::fabs(casc.dcapostopv()) < dcapostoPVmin)
       return false;
-    if (casc.dcanegtopv() < dcanegtoPVmin)
+    if (std::fabs(casc.dcanegtopv()) < dcanegtoPVmin)
       return false;
 
     // Cascade Selections
@@ -884,11 +884,11 @@ struct StrangenessInJets {
       return false;
     if (casc.casccosPA(coll.posX(), coll.posY(), coll.posZ()) < casccospaMin)
       return false;
-    if (casc.dcabachtopv() < dcabachtopvMin)
+    if (std::fabs(casc.dcabachtopv()) < dcabachtopvMin)
       return false;
-    if (casc.dcav0topv(coll.posX(), coll.posY(), coll.posZ()) < dcaV0topvMin)
+    if (std::fabs(casc.dcav0topv(coll.posX(), coll.posY(), coll.posZ())) < dcaV0topvMin)
       return false;
-    if (casc.dcacascdaughters() > dcaCascDaughtersMax)
+    if (std::fabs(casc.dcacascdaughters()) > dcaCascDaughtersMax)
       return false;
 
     // PID Selection on bachelor
@@ -1365,7 +1365,7 @@ struct StrangenessInJets {
         continue;
       registryQC.fill(HIST("survivedK0"), 8.5);
 
-      if (v0.dcaV0daughters() > dcaV0DaughtersMax)
+      if (std::fabs(v0.dcaV0daughters()) > dcaV0DaughtersMax)
         continue;
       registryQC.fill(HIST("survivedK0"), 9.5);
 
