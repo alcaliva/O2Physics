@@ -1760,7 +1760,7 @@ struct AntinucleiInJets {
       for (const auto& particle : mcParticles) {
 
         // Select physical primary particles or HF decay products
-        if (!isPhysicalPrimaryOrFromHF(particle,mcParticles))
+        if (!isPhysicalPrimaryOrFromHF(particle, mcParticles))
           continue;
 
         // Select particles within acceptance
