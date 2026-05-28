@@ -73,8 +73,7 @@ struct CoalescenceTreeProducer {
 
   OutputObj<TTree> treeBoundState{
     "treeBoundState",
-    OutputObjHandlingPolicy::AnalysisObject
-  };
+    OutputObjHandlingPolicy::AnalysisObject};
 
   int64_t eventID = 0;                  // Event ID
   int64_t idB1 = 0, idB2 = 0, idB3 = 0; // MC particle IDs
